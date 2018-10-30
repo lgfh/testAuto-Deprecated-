@@ -23,31 +23,56 @@ public class AutoCreateVm {
 
         try {
             //利用cookies跳过登陆，进入host的界面
-            login.BypassLoginWithCookies(webDriver);
+            login.bypassLoginWithCookies(webDriver);
 
-            //在host页面点击创建主机
-            webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div[2]/div[1]/div/div[2]/div/div/div")).click();
-            //华东一区
-            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[1]/div/div[6]")).click();
-            //实时计费主机
-            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[2]/div[1]/div[2]")).click();
+            webDriver.get("https://zschj.xrcloud.net/ruicloud/buy");
+            //创建选择自定义配置
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[1]/div[2]")).click();
+            //实时计费
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[2]/div/div[2]")).click();
 
+            /*
             //选择镜像，此处为选择centos的第一个镜像
             Actions action = new Actions(webDriver);
             action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[3]/div/div[1]/div/div[2]/div[3]/div[2]/div[1]/div"))).perform();
             Thread.sleep(2000);
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[3]/div/div[1]/div/div[2]/div[3]/div[2]/div[2]/ul/li[1]/span")).click();
+            */
 
+            //选择镜像，此处为选择windows的第一个镜像
+            Actions action = new Actions(webDriver);
+            action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[1]/div"))).perform();
+            Thread.sleep(1000);
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li[1]/span")).click();
+
+            //点 2核
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[4]/div/div[2]/div[2]")).click();
+            //点 4G
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[5]/div/div[2]/div[2]")).click();
+            //默认勾选ip，去掉磁盘
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[3]/div[1]/div[1]/div/img")).click();
+            //点 自定义配置
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[5]/div[1]/div/div[3]")).click();
+
+            //主机名称
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[5]/div[2]/div[1]/div/div[2]/input")).sendKeys("auto-vm");
+
+            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[5]/div[2]/div[3]/div/div[2]/input")).sendKeys("Yrxt@123");
 
             //点 立即购买
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[6]/div/button[2]/span")).click();
             //点 支付
-            webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[4]/div/div/div[2]/button/span")).click();
-            //点 确认支付
-            webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[4]/div/div[2]/div[3]/button")).click();
+            webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div[2]/button/span")).click();
 
+            //确认账户余额的勾选
+            if (!(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[1]/div/label[1]/span[1]/input")).isSelected())) {
+                webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[1]/div/label[1]/span[1]/input")).click();
+            }
 
-            Thread.sleep(2000);
+            //点确认支付
+            webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[3]/button")).click();
+
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
