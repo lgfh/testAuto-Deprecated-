@@ -1,8 +1,13 @@
-package application;
-
 import org.apache.commons.io.FileUtils;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.TakesScreenshot;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.Test;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -12,7 +17,9 @@ import java.util.concurrent.TimeUnit;
 
 public class AutoTestWithScreeenShot {
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    @Test
+    public void AutoTestWithScreeenShot() throws IOException, InterruptedException {
+        //    public static void main(String[] args) throws InterruptedException, IOException {
         System.setProperty("webdriver.chrome.driver", "src/main/resources/chromedriver");
         WebDriver webDriver = new ChromeDriver();
 

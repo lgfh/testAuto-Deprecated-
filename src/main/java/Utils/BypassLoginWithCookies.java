@@ -5,9 +5,13 @@ import org.openqa.selenium.Cookie;
 import org.openqa.selenium.WebDriver;
 
 public class BypassLoginWithCookies {
+    //    static String BASE_URL = "https://www.xrcloud.net/ruicloud/";
+    static String BASE_URL = "https://zschj.xrcloud.net/ruicloud/";
+
     public void bypassLoginWithCookies(WebDriver webDriver) throws InterruptedException {
 //        webDriver = prepareChromeWebDriver();
-        webDriver.get("https://zschj.xrcloud.net/ruicloud/login");
+//        webDriver.get("https://zschj.xrcloud.net/ruicloud/login");
+        webDriver.get(BASE_URL + "login");
         webDriver.manage().window().maximize();
 
         webDriver.manage().deleteAllCookies();
@@ -21,8 +25,12 @@ public class BypassLoginWithCookies {
 
         Cookie cookie = new Cookie("XJSESSIONID", result);
         webDriver.manage().addCookie(cookie);
-        webDriver.get("https://zschj.xrcloud.net/ruicloud/host");
-        Thread.sleep(2000);
+//        webDriver.get("https://zschj.xrcloud.net/ruicloud/host");
+        Thread.sleep(1000);
 
+    }
+
+    public String getCurrentURL() {
+        return BASE_URL;
     }
 }

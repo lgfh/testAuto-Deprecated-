@@ -25,7 +25,7 @@ public class AutoCreateVm {
             //利用cookies跳过登陆，进入host的界面
             login.bypassLoginWithCookies(webDriver);
 
-            webDriver.get("https://zschj.xrcloud.net/ruicloud/buy");
+            webDriver.get(login.getCurrentURL() + "buy");
             //创建选择自定义配置
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[1]/div[2]")).click();
             //实时计费
