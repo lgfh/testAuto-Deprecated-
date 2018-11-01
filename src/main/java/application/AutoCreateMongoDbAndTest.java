@@ -31,7 +31,7 @@ public class AutoCreateMongoDbAndTest {
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div[1]/div[2]")).click();
 
-            //选择mysql镜像，此处为mysql随机镜像
+            //选择mongodb镜像
             Actions action = new Actions(webDriver);
             action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[1]/div"))).perform();
             Thread.sleep(1000);
