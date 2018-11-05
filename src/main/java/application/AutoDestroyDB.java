@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
+import java.text.ParseException;
+
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 /**
@@ -15,7 +17,7 @@ public class AutoDestroyDB {
 
     private final static Logger logger = Logger.getLogger(AutoDestroyDB.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类
@@ -31,14 +33,14 @@ public class AutoDestroyDB {
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[2]")).click();
             webDriver.findElement(By.xpath("/html/body/div/div[2]/div/div[3]/button[2]/span")).click();
             // 等待解绑
-            Thread.sleep(5000);
+            Thread.sleep(15000);
 //            }
             //点删除
             webDriver.navigate().refresh();
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[8]/div/div/span")).click();
             webDriver.findElement(By.xpath("/html/body/div[10]/div[2]/div/div[3]/button[2]")).click();
 //            webDriver.findElement(By.linkText("确定")).click();
-            logger.info("DB has been moved into recycle bin");
+//            logger.info("DB has been moved into recycle bin");
 
             //清理回收站
             webDriver.get(login.getCurrentURL() + "recycle");
@@ -46,7 +48,7 @@ public class AutoDestroyDB {
                 webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div[1]/table/thead/tr/th[1]/div/label/span/input")).click();
             }
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[1]/button[1]/span")).click();
-            logger.info("DB has been destroyed");
+//            logger.info("DB has been destroyed");
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             logger.error(e.getMessage());

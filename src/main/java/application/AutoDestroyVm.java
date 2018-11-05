@@ -10,11 +10,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import java.text.ParseException;
+
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoDestroyVm {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();

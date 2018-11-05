@@ -36,6 +36,9 @@ public class AutoCreateMysqlAndTestConnection {
 
             webDriver.get(login.getCurrentURL() + "buy/bdata");
 
+            //区域选择
+            webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div[1]/div[2]")).click();
 
@@ -46,7 +49,7 @@ public class AutoCreateMysqlAndTestConnection {
             List<WebElement> MysqlDBTemplateList = webDriver.findElements(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li"));
             Random random = new Random();
             int num = random.nextInt(MysqlDBTemplateList.size()) + 1;
-//            int num = 2;
+//            int num = 3;
             webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).click();
             logger.info("using DB template：" + webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).getText());
 
@@ -77,7 +80,7 @@ public class AutoCreateMysqlAndTestConnection {
             Thread.sleep(1000);
 
             webDriver.get(login.getCurrentURL() + "cloudDatabase");
-            Thread.sleep(40000);
+            Thread.sleep(100000);
             webDriver.navigate().refresh();
             String ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
             if (ip == null) {
@@ -86,7 +89,7 @@ public class AutoCreateMysqlAndTestConnection {
                 logger.info("The public ip is :" + ip);
             }
             String passwd = "Yrxt@123";
-            Thread.sleep(35000);
+            Thread.sleep(40000);
             conn = MysqlUtil.getConnectionAndTest(ip, passwd);
         } catch (Exception e) {
             logger.error(e.getMessage());

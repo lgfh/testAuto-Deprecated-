@@ -8,6 +8,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 
+import java.text.ParseException;
+
 /**
  * @author WXY
  * @version 创建时间：2018/11/1
@@ -30,9 +32,11 @@ public class AutoCreateRedisAndTest {
 
     }
 
-    public static void autoCreateRedisAndTest(WebDriver webDriver, BypassLoginWithCookies login) throws InterruptedException {
+    public static void autoCreateRedisAndTest(WebDriver webDriver, BypassLoginWithCookies login) throws InterruptedException, ParseException {
         login.bypassLoginWithCookies(webDriver);
         webDriver.get(login.getCurrentURL() + "buy/bdata");
+        //区域选择
+        webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
         //实时计费
         webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div[1]/div[2]")).click();
         //选择redis镜像，此处为mysql随机镜像

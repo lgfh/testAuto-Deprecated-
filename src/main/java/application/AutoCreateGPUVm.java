@@ -12,6 +12,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Random;
 
@@ -21,7 +22,7 @@ public class AutoCreateGPUVm {
 
     private final static Logger logger = Logger.getLogger(AutoCreateGPUVm.class);
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
