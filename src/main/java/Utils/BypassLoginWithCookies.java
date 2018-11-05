@@ -28,7 +28,6 @@ public class BypassLoginWithCookies {
                 webDriver.manage().addCookie(cookie);
                 logger.info("Cookie可用，跳过登录");
                 Thread.sleep(1000);
-                return;
             } else {
                 loginAndWriteCookieToTxt(webDriver, now);
             }
