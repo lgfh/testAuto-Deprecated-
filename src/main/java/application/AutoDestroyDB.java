@@ -48,6 +48,7 @@ public class AutoDestroyDB {
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[1]/button[1]/span")).click();
 //            logger.info("DB has been destroyed");
             Thread.sleep(1000);
+            logger.info("auto destroy DB success");
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
         } finally {
