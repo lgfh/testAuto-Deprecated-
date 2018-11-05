@@ -10,13 +10,11 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 
-import java.text.ParseException;
-
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoDestroyVm {
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
 
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
@@ -27,6 +25,7 @@ public class AutoDestroyVm {
             //利用cookies跳过登陆，进入host的界面
             login.bypassLoginWithCookies(webDriver);
 
+            webDriver.get(login.getCurrentURL() + "host");
             //选中第一台主机，在host页面点击释放公网ip
             Actions action = new Actions(webDriver);
             if (!webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div[2]/div[1]/div/div[1]/div/div/div/div[1]/span[4]")).getText().equals("公网地址:")) {

@@ -5,8 +5,6 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
-import java.text.ParseException;
-
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 /**
@@ -17,7 +15,7 @@ public class AutoDestroyDB {
 
     private final static Logger logger = Logger.getLogger(AutoDestroyDB.class);
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类

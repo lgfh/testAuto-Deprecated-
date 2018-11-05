@@ -11,7 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Random;
 
@@ -19,7 +18,7 @@ import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoCreateVm {
 
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
 
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
