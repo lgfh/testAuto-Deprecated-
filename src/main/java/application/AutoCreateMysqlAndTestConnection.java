@@ -36,8 +36,10 @@ public class AutoCreateMysqlAndTestConnection {
 
             webDriver.get(login.getCurrentURL() + "buy/bdata");
 
-            //区域选择
-            webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+            }
 
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div[1]/div[2]")).click();

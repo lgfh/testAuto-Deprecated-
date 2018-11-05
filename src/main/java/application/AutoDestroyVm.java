@@ -57,7 +57,7 @@ public class AutoDestroyVm {
 //            webDriver.switchTo().alert().accept();
 
             //清理回收站
-            webDriver.get("https://zschj.xrcloud.net/ruicloud/recycle");
+            webDriver.get(login.getCurrentURL() + "recycle");
             if (!(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div[2]/table/tbody/tr/td[1]/div/label/span/input")).isSelected())) {
                 webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[2]/div[2]/div[1]/div/div/div/div[2]/table/tbody/tr/td[1]/div/label/span/input")).click();
             }

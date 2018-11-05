@@ -36,6 +36,11 @@ public class AutoCreateGPUVm {
             //创建
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[3]/button/span")).click();
 
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+            }
+
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div/div[3]")).click();
 

@@ -30,6 +30,10 @@ public class AutoCreateVm {
             login.bypassLoginWithCookies(webDriver);
 
             webDriver.get(login.getCurrentURL() + "buy");
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+            }
             //创建选择自定义配置
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[1]/div[2]")).click();
             //实时计费
