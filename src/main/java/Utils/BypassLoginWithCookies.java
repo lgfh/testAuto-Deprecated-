@@ -7,8 +7,8 @@ import org.openqa.selenium.WebDriver;
 
 
 public class BypassLoginWithCookies {
-    //    static String BASE_URL = "https://www.xrcloud.net/ruicloud/";
-    static String BASE_URL = "https://zschj.xrcloud.net/ruicloud/";
+    static String BASE_URL = "https://www.xrcloud.net/ruicloud/";
+//    static String BASE_URL = "https://zschj.xrcloud.net/ruicloud/";
 
     private final static Logger logger = Logger.getLogger(BypassLoginWithCookies.class);
 
