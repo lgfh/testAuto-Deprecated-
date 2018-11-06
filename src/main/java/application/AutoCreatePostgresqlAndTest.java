@@ -9,8 +9,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.sql.Connection;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
@@ -25,12 +28,19 @@ public class AutoCreatePostgresqlAndTest {
     static Connection conn = null;
 
     public static void main(String[] args) {
+        autoCreatePostgresqlTest();
+    }
+
+    public static void autoCreatePostgresqlTest() {
+
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
-
         try {
+            Properties properties = new Properties();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
+            properties.load(bufferedReader);
             //利用cookies跳过登陆，进入数据库购买的界面
             login.bypassLoginWithCookies(webDriver);
 
@@ -38,7 +48,7 @@ public class AutoCreatePostgresqlAndTest {
 
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
-                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+                webDriver.findElement(By.xpath(properties.getProperty("DB购买页面华东一区"))).click();
             }
 
             //实时计费
@@ -82,14 +92,20 @@ public class AutoCreatePostgresqlAndTest {
             Thread.sleep(1000);
 
             webDriver.get(login.getCurrentURL() + "cloudDatabase");
-            Thread.sleep(70000);
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区")))).perform();
+                Thread.sleep(1000);
+                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区华东一区"))).click();
+            }
+            Thread.sleep(80000);
             webDriver.navigate().refresh();
             String ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
-            if (ip == null) {
-                logger.info("create db unfinished");
-            } else {
-                logger.info("The public ip is :" + ip);
-            }
+//            if (ip == null) {
+//                logger.info("create db unfinished");
+//            } else {
+            logger.info("The public ip is :" + ip);
+//            }
             String passwd = "Yrxt@123";
             Thread.sleep(60000);
             conn = PostgresqlUtil.getPostgresqlConnectionAndTest(ip, passwd);

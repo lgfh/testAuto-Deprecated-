@@ -8,7 +8,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
 
-import java.text.ParseException;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * @author WXY
@@ -32,13 +35,17 @@ public class AutoCreateRedisAndTest {
 
     }
 
-    public static void autoCreateRedisAndTest(WebDriver webDriver, BypassLoginWithCookies login) throws InterruptedException, ParseException {
+    public static void autoCreateRedisAndTest(WebDriver webDriver, BypassLoginWithCookies login) throws InterruptedException, IOException {
+
         login.bypassLoginWithCookies(webDriver);
+        Properties properties = new Properties();
+        BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
+        properties.load(bufferedReader);
         webDriver.get(login.getCurrentURL() + "buy/bdata");
 
         if (!(login.getCurrentURL().contains("zschj"))) {
             //区域选择
-            webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+            webDriver.findElement(By.xpath(properties.getProperty("DB购买页面华东一区"))).click();
         }
         //实时计费
         webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div[1]/div[2]")).click();
@@ -80,14 +87,20 @@ public class AutoCreateRedisAndTest {
         Thread.sleep(1000);
 
         webDriver.get(login.getCurrentURL() + "cloudDatabase");
+        if (!(login.getCurrentURL().contains("zschj"))) {
+            //区域选择
+            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区")))).perform();
+            Thread.sleep(1000);
+            webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区华东一区"))).click();
+        }
         Thread.sleep(40000);
         webDriver.navigate().refresh();
         String ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
-        if (ip == null) {
-            logger.info("create db unfinished");
-        } else {
+//        if (ip == null) {
+//            logger.info("create db unfinished");
+//        } else {
             logger.info("The public ip is :" + ip);
-        }
+//        }
         Thread.sleep(50000);
         String RedisConnectionResult = RedisUtil.getRedisConnectionResult(ip, passwd);
         if (RedisConnectionResult != null) {
