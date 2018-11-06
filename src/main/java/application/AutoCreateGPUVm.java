@@ -22,7 +22,10 @@ public class AutoCreateGPUVm {
     private final static Logger logger = Logger.getLogger(AutoCreateGPUVm.class);
 
     public static void main(String[] args) {
+        autoCreateGpuVM();
+    }
 
+    public static void autoCreateGpuVM() {
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类
@@ -53,6 +56,9 @@ public class AutoCreateGPUVm {
             Random random = new Random();
             int num = random.nextInt(GpuVmTemplateList.size()) + 1;
 //            String firstTemplateElement =GpuVmTemplateList.get(0).getText();
+            logger.info("使用模板： " +
+                    webDriver.findElement(By.xpath(String.format
+                            ("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[3]/div[2]/div[2]/ul/li[%d]", num))).getText());
             webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[3]/div[2]/div[2]/ul/li[%d]", num))).click();
 
             //点 自定义设置
@@ -72,15 +78,15 @@ public class AutoCreateGPUVm {
 
             //点 确认支付
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[3]/button/span")).click();
-
             Thread.sleep(5000);
             if (webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText() != null)
                 logger.info(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText());
+            logger.info("创建GPU主机成功");
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.info("创建GPU主机失败");
+            logger.error(e.getMessage());
         } finally {
             webDriver.quit();
         }
-
     }
 }

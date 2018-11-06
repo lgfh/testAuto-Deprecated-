@@ -6,6 +6,7 @@ package application;
  */
 
 import Utils.BypassLoginWithCookies;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -17,8 +18,13 @@ import java.util.Random;
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoCreateVm {
+    private final static Logger logger = Logger.getLogger(AutoCreateVm.class);
 
     public static void main(String[] args) {
+        autoCreateVM();
+    }
+
+    public static void autoCreateVM() {
 
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
@@ -47,6 +53,9 @@ public class AutoCreateVm {
             List<WebElement> VmTemplateList = webDriver.findElements(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li"));
             Random random = new Random();
             int num = random.nextInt(VmTemplateList.size()) + 1;
+            logger.info("使用模板： " +
+                    webDriver.findElement(By.xpath(String.format
+                            ("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li[%d]", num))).getText());
             webDriver.findElement(By.xpath(String.format("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li[%d]", num))).click();
 
             //点 2核
@@ -75,13 +84,13 @@ public class AutoCreateVm {
 
             //点确认支付
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[3]/button")).click();
-
+            logger.info("创建VM成功");
             Thread.sleep(1000);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.info("创建VM失败");
+            logger.error(e.getMessage());
         } finally {
             webDriver.quit();
         }
-
     }
 }

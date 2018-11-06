@@ -16,6 +16,10 @@ public class AutoDestroyDB {
     private final static Logger logger = Logger.getLogger(AutoDestroyDB.class);
 
     public static void main(String[] args) {
+        autoDestroyDB();
+    }
+
+    public static void autoDestroyDB() {
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类
@@ -37,8 +41,7 @@ public class AutoDestroyDB {
             webDriver.navigate().refresh();
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[8]/div/div/span")).click();
             webDriver.findElement(By.xpath("/html/body/div[10]/div[2]/div/div[3]/button[2]")).click();
-//            webDriver.findElement(By.linkText("确定")).click();
-//            logger.info("DB has been moved into recycle bin");
+
 
             //清理回收站
             webDriver.get(login.getCurrentURL() + "recycle");

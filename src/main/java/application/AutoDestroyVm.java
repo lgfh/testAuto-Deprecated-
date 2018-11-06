@@ -6,6 +6,7 @@ package application;
  */
 
 import Utils.BypassLoginWithCookies;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
@@ -13,9 +14,14 @@ import org.openqa.selenium.interactions.Actions;
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoDestroyVm {
+    private final static Logger logger = Logger.getLogger(AutoDestroyVm.class);
 
     public static void main(String[] args) {
+        autoDestroyVM();
 
+    }
+
+    public static void autoDestroyVM() {
         //准备chrome的驱动
         WebDriver webDriver = prepareChromeWebDriver();
         //实例化工具类
@@ -53,8 +59,6 @@ public class AutoDestroyVm {
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[3]/div/div[2]/ul/li[7]")).click();
             webDriver.findElement(By.xpath("/html/body/div/div[2]/div/div[3]/button[2]/span")).click();
 
-//            webDriver.findElement(By.linkText("确定")).click();
-//            webDriver.switchTo().alert().accept();
 
             //清理回收站
             webDriver.get(login.getCurrentURL() + "recycle");
@@ -64,12 +68,12 @@ public class AutoDestroyVm {
 
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[1]/button[1]/span")).click();
 
+            logger.info("Destroy VM success");
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
             webDriver.quit();
         }
-
     }
 }
