@@ -12,7 +12,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
@@ -32,36 +36,51 @@ public class AutoCreateVm {
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
         try {
+            Properties properties = new Properties();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
+            properties.load(bufferedReader);
             //利用cookies跳过登陆，进入host的界面
             login.bypassLoginWithCookies(webDriver);
 
             webDriver.get(login.getCurrentURL() + "buy");
-            if (!(login.getCurrentURL().contains("zschj"))) {
-                //区域选择
-                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
-            }
             //创建选择自定义配置
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[1]/div[2]")).click();
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[1]/div/div[6]")).click();
+            }
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[2]/div/div[2]")).click();
 
-            //选择镜像，此处为选择windows的某一个镜像
+            //选择镜像，此处为选择指定操作系统的某一个镜像
             Actions action = new Actions(webDriver);
-            action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[1]/div"))).perform();
+            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("Linux镜像")))).perform();
             Thread.sleep(1000);
 
-            List<WebElement> VmTemplateList = webDriver.findElements(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li"));
+            List<WebElement> VmTemplateList = webDriver.findElements(By.xpath(properties.getProperty("Linux镜像下拉列表")));
             Random random = new Random();
             int num = random.nextInt(VmTemplateList.size()) + 1;
             logger.info("使用模板： " +
                     webDriver.findElement(By.xpath(String.format
-                            ("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li[%d]", num))).getText());
-            webDriver.findElement(By.xpath(String.format("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[2]/div/div[2]/div[4]/div[1]/div[2]/ul/li[%d]", num))).click();
+                            (properties.getProperty("Linux镜像下拉列表") + "[%d]", num))).getText());
+            webDriver.findElement(By.xpath(String.format(properties.getProperty("Linux镜像下拉列表") + "[%d]", num))).click();
 
             //点 2核
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[4]/div/div[2]/div[2]")).click();
             //点 4G
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[5]/div/div[2]/div[2]")).click();
+            //创建公网负载均衡子网的主机
+
+            webDriver.findElement(By.xpath(properties.getProperty("创建VM选择子网"))).click();
+            Thread.sleep(1000);
+            List<WebElement> tierList = webDriver.findElements(By.xpath(properties.getProperty("创建VM选择子网下拉列表")));
+            for (WebElement e : tierList) {
+                if (e.getText().contains("lb")) {
+                    logger.info("使用子网" + e.getText() + "创建VM");
+                    e.click();
+                }
+            }
+
             //默认勾选ip，去掉磁盘
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[3]/div[1]/div[1]/div/img")).click();
             //点 自定义配置
@@ -89,6 +108,9 @@ public class AutoCreateVm {
         } catch (InterruptedException e) {
             logger.info("创建VM失败");
             logger.error(e.getMessage());
+
+        } catch (IOException e) {
+            logger.error("读取xpath文件异常");
         } finally {
             webDriver.quit();
         }
