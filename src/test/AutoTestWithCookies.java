@@ -1,10 +1,10 @@
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
 
 import java.text.ParseException;
 
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
+import static cn.unionstech.Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoTestWithCookies {
 
