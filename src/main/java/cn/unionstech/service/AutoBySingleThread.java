@@ -1,4 +1,4 @@
-package service;
+package cn.unionstech.service;
 
 import org.apache.log4j.Logger;
 

@@ -1,11 +1,13 @@
-package application;
+package cn.unionstech.application;
 
 
 /*
 账号的companyid=150899716136
  */
 
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.ChromeDriverUtil;
+import cn.unionstech.Utils.JsonUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -15,8 +17,6 @@ import org.openqa.selenium.interactions.Actions;
 import java.util.List;
 import java.util.Random;
 
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
-
 public class AutoCreateGPUVm {
 
     private final static Logger logger = Logger.getLogger(AutoCreateGPUVm.class);
@@ -25,14 +25,14 @@ public class AutoCreateGPUVm {
         autoCreateGpuVM();
     }
 
-    public static void autoCreateGpuVM() {
+    public static String autoCreateGpuVM() {
         //准备chrome的驱动
-        WebDriver webDriver = prepareChromeWebDriver();
+        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
         try {
-            //利用cookies跳过登陆，进入host的界面
+            //利用cookies跳过登陆，进入创建GPU的界面
             login.bypassLoginWithCookies(webDriver);
 
             webDriver.get(login.getCurrentURL() + "GpuList");
@@ -82,9 +82,10 @@ public class AutoCreateGPUVm {
             if (webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText() != null)
                 logger.info(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText());
             logger.info("创建GPU主机成功");
+            return JsonUtil.getJSONString(0, "创建GPU主机成功");
         } catch (InterruptedException e) {
-            logger.info("创建GPU主机失败");
-            logger.error(e.getMessage());
+            logger.error("创建GPU主机失败" + e.getMessage());
+            return JsonUtil.getJSONString(1, "创建GPU主机失败");
         } finally {
             webDriver.quit();
         }

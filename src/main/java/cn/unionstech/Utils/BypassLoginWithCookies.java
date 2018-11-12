@@ -1,4 +1,4 @@
-package Utils;
+package cn.unionstech.Utils;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;

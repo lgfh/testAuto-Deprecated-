@@ -1,11 +1,10 @@
-package application;
+package cn.unionstech.application;
 
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.ChromeDriverUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 /**
  * @author WXY
@@ -21,7 +20,7 @@ public class AutoDestroyDB {
 
     public static void autoDestroyDB() {
         //准备chrome的驱动
-        WebDriver webDriver = prepareChromeWebDriver();
+        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 

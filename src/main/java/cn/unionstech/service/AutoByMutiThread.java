@@ -1,10 +1,10 @@
-package service;
+package cn.unionstech.service;
 
-import application.AutoCreateGPUVm;
-import application.AutoCreateMysqlAndTestConnection;
-import application.AutoCreateVm;
-import application.AutoDestroyDB;
-import application.AutoDestroyVm;
+import cn.unionstech.application.AutoCreateGPUVm;
+import cn.unionstech.application.AutoCreateMysqlAndTestConnection;
+import cn.unionstech.application.AutoCreateVm;
+import cn.unionstech.application.AutoDestroyDB;
+import cn.unionstech.application.AutoDestroyVm;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.ExecutorService;

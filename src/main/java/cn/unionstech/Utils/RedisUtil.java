@@ -1,4 +1,4 @@
-package Utils;
+package cn.unionstech.Utils;
 
 import redis.clients.jedis.Jedis;
 

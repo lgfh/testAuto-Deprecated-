@@ -1,6 +1,7 @@
-package application;
+package cn.unionstech.application;
 
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.ChromeDriverUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -11,8 +12,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
-
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 /**
  * @author WXY
@@ -26,7 +25,7 @@ public class AutoAddVmToLoadBalance {
     }
 
     public static void autoAddVmToLoadBalance() {
-        WebDriver webDriver = prepareChromeWebDriver();
+        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         BypassLoginWithCookies login = new BypassLoginWithCookies();
         Properties properties = new Properties();
 

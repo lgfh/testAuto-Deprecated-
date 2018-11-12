@@ -1,17 +1,16 @@
-package application;
+package cn.unionstech.application;
 
 
 /*
 账号的companyid=150899716136
  */
 
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.ChromeDriverUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
-
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
 
 public class AutoDestroyVm {
     private final static Logger logger = Logger.getLogger(AutoDestroyVm.class);
@@ -23,7 +22,7 @@ public class AutoDestroyVm {
 
     public static void autoDestroyVM() {
         //准备chrome的驱动
-        WebDriver webDriver = prepareChromeWebDriver();
+        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 

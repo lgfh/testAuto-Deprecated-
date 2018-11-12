@@ -1,6 +1,7 @@
-package application;
+package cn.unionstech.application;
 
-import Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.BypassLoginWithCookies;
+import cn.unionstech.Utils.ChromeDriverUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import static Utils.ChromeDriverUtil.prepareChromeWebDriver;
-
 /**
  * @author WXY
  * @version 创建时间：2018/11/7
@@ -28,7 +27,7 @@ public class AutoCreateLoadBalance {
     }
 
     public static void autoCreateLoadBalance() {
-        WebDriver webDriver = prepareChromeWebDriver();
+        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         BypassLoginWithCookies login = new BypassLoginWithCookies();
         Properties properties = new Properties();
 
