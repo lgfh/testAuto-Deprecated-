@@ -7,6 +7,7 @@ package cn.unionstech.application;
 
 import cn.unionstech.Utils.BypassLoginWithCookies;
 import cn.unionstech.Utils.ChromeDriverUtil;
+import cn.unionstech.Utils.JsonUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -20,7 +21,7 @@ public class AutoDestroyVm {
 
     }
 
-    public static void autoDestroyVM() {
+    public static String autoDestroyVM() {
         //准备chrome的驱动
         WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
@@ -46,7 +47,7 @@ public class AutoDestroyVm {
 
             //关闭电源
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div[2]/div[1]/div/div[1]/div/div/div/div[1]/div/i")).click();
-            Thread.sleep(35000);
+            Thread.sleep(50000);
 
             //切换关机选项卡
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div[1]/div/div/div/div/div[5]")).click();
@@ -68,9 +69,10 @@ public class AutoDestroyVm {
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div[1]/button[1]/span")).click();
 
             logger.info("Destroy VM success");
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            return JsonUtil.getJSONString(0, "删除VM成功");
+        } catch (Exception e) {
+            logger.error("删除VM失败");
+            return JsonUtil.getJSONString(1, "删除VM失败");
         } finally {
             webDriver.quit();
         }

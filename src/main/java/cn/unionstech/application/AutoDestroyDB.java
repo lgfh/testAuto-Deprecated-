@@ -2,6 +2,7 @@ package cn.unionstech.application;
 
 import cn.unionstech.Utils.BypassLoginWithCookies;
 import cn.unionstech.Utils.ChromeDriverUtil;
+import cn.unionstech.Utils.JsonUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -18,7 +19,7 @@ public class AutoDestroyDB {
         autoDestroyDB();
     }
 
-    public static void autoDestroyDB() {
+    public static String autoDestroyDB() {
         //准备chrome的驱动
         WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
@@ -51,8 +52,10 @@ public class AutoDestroyDB {
 //            logger.info("DB has been destroyed");
             Thread.sleep(1000);
             logger.info("auto destroy DB success");
+            return JsonUtil.getJSONString(0, "删除数据库成功");
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
+            return JsonUtil.getJSONString(1, "删除数据库失败");
         } finally {
             webDriver.quit();
         }

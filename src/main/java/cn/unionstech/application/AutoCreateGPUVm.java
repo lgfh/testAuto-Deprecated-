@@ -14,7 +14,11 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
 public class AutoCreateGPUVm {
@@ -32,6 +36,9 @@ public class AutoCreateGPUVm {
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
         try {
+            Properties properties = new Properties();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
+            properties.load(bufferedReader);
             //利用cookies跳过登陆，进入创建GPU的界面
             login.bypassLoginWithCookies(webDriver);
 
@@ -39,16 +46,16 @@ public class AutoCreateGPUVm {
             //创建
             webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[3]/button/span")).click();
 
+            Actions action = new Actions(webDriver);
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
-                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[5]")).click();
+                webDriver.findElement(By.xpath(properties.getProperty("GPU购买页面-北方二区"))).click();
             }
 
             //实时计费
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[2]/div/div[3]")).click();
 
             //选择镜像，返回所有镜像放入一个list中
-            Actions action = new Actions(webDriver);
             action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[3]/div[2]/div[1]/div"))).perform();
             Thread.sleep(1000);
 
@@ -83,7 +90,10 @@ public class AutoCreateGPUVm {
                 logger.info(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText());
             logger.info("创建GPU主机成功");
             return JsonUtil.getJSONString(0, "创建GPU主机成功");
-        } catch (InterruptedException e) {
+        } catch (FileNotFoundException e) {
+            logger.error("xpath文件读取失败");
+            return JsonUtil.getJSONString(1, "xpath文件读取失败，创建GPU主机失败");
+        } catch (Exception e) {
             logger.error("创建GPU主机失败" + e.getMessage());
             return JsonUtil.getJSONString(1, "创建GPU主机失败");
         } finally {

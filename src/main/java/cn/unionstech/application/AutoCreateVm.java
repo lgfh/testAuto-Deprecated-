@@ -69,17 +69,17 @@ public class AutoCreateVm {
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[4]/div/div[2]/div[2]")).click();
             //点 4G
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[5]/div/div[2]/div[2]")).click();
-            //创建公网负载均衡子网的主机
-
-            webDriver.findElement(By.xpath(properties.getProperty("创建VM选择子网"))).click();
-            Thread.sleep(1000);
-            List<WebElement> tierList = webDriver.findElements(By.xpath(properties.getProperty("创建VM选择子网下拉列表")));
-            for (WebElement e : tierList) {
-                if (e.getText().contains("lb")) {
-                    logger.info("使用子网" + e.getText() + "创建VM");
-                    e.click();
-                }
-            }
+//            //创建公网负载均衡子网的主机
+//
+//            webDriver.findElement(By.xpath(properties.getProperty("创建VM选择子网"))).click();
+//            Thread.sleep(1000);
+//            List<WebElement> tierList = webDriver.findElements(By.xpath(properties.getProperty("创建VM选择子网下拉列表")));
+//            for (WebElement e : tierList) {
+//                if (e.getText().contains("lb")) {
+//                    logger.info("使用子网" + e.getText() + "创建VM");
+//                    e.click();
+//                }
+//            }
 
             //默认勾选ip，去掉磁盘
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[3]/div[1]/div[1]/div/img")).click();
@@ -110,7 +110,7 @@ public class AutoCreateVm {
             logger.error("读取xpath文件异常");
             return JsonUtil.getJSONString(0, "读取xpath文件异常,创建VM失败");
         } catch (Exception e) {
-            logger.error("创建VM失败" + e.getMessage());
+            logger.error("创建VM失败");
             return JsonUtil.getJSONString(0, "创建VM失败");
         } finally {
             webDriver.quit();
