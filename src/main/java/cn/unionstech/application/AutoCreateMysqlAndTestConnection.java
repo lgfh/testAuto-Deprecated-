@@ -2,12 +2,15 @@ package cn.unionstech.application;
 
 import cn.unionstech.Utils.BypassLoginWithCookies;
 import cn.unionstech.Utils.ChromeDriverUtil;
+import cn.unionstech.Utils.JsonUtil;
 import cn.unionstech.Utils.MysqlUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,18 +24,22 @@ import java.util.Random;
  * @version 创建时间：2018/10/31
  */
 
+@Service
 public class AutoCreateMysqlAndTestConnection {
     private final static Logger logger = Logger.getLogger(AutoCreateMysqlAndTestConnection.class);
+
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
     static Connection conn = null;
 
     public static void main(String[] args) {
-        autoCreateMysqlAndTestConnection();
+//        autoCreateMysqlAndTestConnection("华东一区");
     }
 
-    public static void autoCreateMysqlAndTestConnection() {
+    public String autoCreateMysqlAndTestConnection(String zone) {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
         Properties properties = new Properties();
@@ -47,8 +54,7 @@ public class AutoCreateMysqlAndTestConnection {
 
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
-//                webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[1]/div/div[6]")).click();
-                webDriver.findElement(By.xpath(properties.getProperty("DB购买页面华东一区"))).click();
+                webDriver.findElement(By.xpath(properties.getProperty("DB购买页面" + zone))).click();
             }
 
             //实时计费
@@ -56,19 +62,31 @@ public class AutoCreateMysqlAndTestConnection {
 
             //选择mysql镜像，此处为mysql随机镜像
             Actions action = new Actions(webDriver);
-            action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[1]/div"))).perform();
+            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB购买页面Mysql镜像")))).perform();
             Thread.sleep(1000);
-            List<WebElement> MysqlDBTemplateList = webDriver.findElements(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li"));
+            List<WebElement> MysqlDBTemplateList = webDriver.findElements(By.xpath(properties.getProperty("DB购买页面Mysql镜像下拉列表")));
             Random random = new Random();
             int num = random.nextInt(MysqlDBTemplateList.size()) + 1;
 //            int num = 3;
-            webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).click();
-            logger.info("using DB template：" + webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).getText());
+            MysqlDBTemplateList.get(num).click();
+            logger.info("using DB template：" + MysqlDBTemplateList.get(num).getText());
+//            webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).click();
+//            logger.info("using DB template：" + webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).getText());
 
             //点 2核
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[2]")).click();
             //点 4G
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[3]/div/div[2]/div[2]")).click();
+
+            //筛选VPC
+            webDriver.findElement(By.xpath(properties.getProperty("DB购买页面选择VPC"))).click();
+            Thread.sleep(500);
+            List<WebElement> VPCList = webDriver.findElements(By.xpath(properties.getProperty("DB购买页面选择VPC下拉列表")));
+            for (WebElement e : VPCList) {
+                if (e.getText().contains("new"))
+                    e.click();
+            }
+
             //默认勾选ip，去掉磁盘
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[3]/div[1]/div[1]/div/img")).click();
 
@@ -95,22 +113,33 @@ public class AutoCreateMysqlAndTestConnection {
                 //区域选择
                 action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区")))).perform();
                 Thread.sleep(1000);
-                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区华东一区"))).click();
+                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区" + zone))).click();
             }
             Thread.sleep(100000);
             webDriver.navigate().refresh();
             String ip = null;
             try {
-                ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
+                for (int i = 0; i < 4; i++) {
+                    ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面第一条IP地址"))).getText();
+                    if (ip != null)
+                        break;
+                    Thread.sleep(5000);
+                }
                 logger.info("The public ip is :" + ip);
             } catch (Exception e) {
-                logger.info("create db unfinished");
+                logger.info("failed to get DB public IP");
             }
             String passwd = "Yrxt@123";
-            Thread.sleep(60000);
+            Thread.sleep(100000);
             conn = MysqlUtil.getConnectionAndTest(ip, passwd);
+            if (conn != null) {
+                return JsonUtil.getJSONString(0, "Mysql数据库连接测试成功,zone是：" + zone + ",ip是：" + ip);
+            } else {
+                return JsonUtil.getJSONString(1, "Mysql数据库连接测试失败,zone是：" + zone);
+            }
         } catch (Exception e) {
             logger.error(e.getMessage());
+            return JsonUtil.getJSONString(1, "Mysql数据库创建异常,zone是：" + zone);
         } finally {
             MysqlUtil.closeConnection(conn);
             webDriver.quit();
