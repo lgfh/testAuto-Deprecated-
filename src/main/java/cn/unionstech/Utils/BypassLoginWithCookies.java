@@ -33,7 +33,7 @@ public class BypassLoginWithCookies {
             }
 
         } else {
-            loginAndWriteCookieToTxt(webDriver, System.currentTimeMillis() + 1800000);
+            loginAndWriteCookieToTxt(webDriver, System.currentTimeMillis());
         }
 
     }
