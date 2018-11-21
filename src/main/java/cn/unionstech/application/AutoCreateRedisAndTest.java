@@ -28,20 +28,6 @@ public class AutoCreateRedisAndTest {
     @Autowired
     ChromeDriverUtil chromeDriverUtil;
 
-//    public static void main(String[] args) {
-//
-//        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
-//        BypassLoginWithCookies login = new BypassLoginWithCookies();
-//        try {
-//            autoCreateRedisAndTest(webDriver, login);
-//
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//        } finally {
-//            webDriver.quit();
-//        }
-//
-//    }
 
     public String autoCreateRedisAndTest(String zone) {
 
@@ -71,15 +57,13 @@ public class AutoCreateRedisAndTest {
             int num = random.nextInt(RedisDBTemplateList.size());
             RedisDBTemplateList.get(num).click();
             logger.info("using DB template：" + RedisDBTemplateList.get(num).getText());
-//        webDriver.findElement(By.xpath(String.format("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[5]/div[2]/ul/li[%d]", num))).click();
-//        webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[1]/div[2]/ul/li/span")).click();
-//        logger.info("using DB template：" + webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[1]/div[2]/ul/li/span")).getText());
 
             //点 2核
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[2]")).click();
             //点 4G
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[3]/div/div[2]/div[2]")).click();
 
+            //选择带new的新VPC来创建DB
             webDriver.findElement(By.xpath(properties.getProperty("DB购买页面选择VPC"))).click();
             Thread.sleep(500);
             List<WebElement> VPCList = webDriver.findElements(By.xpath(properties.getProperty("DB购买页面选择VPC下拉列表")));
@@ -118,28 +102,24 @@ public class AutoCreateRedisAndTest {
                 Thread.sleep(1000);
                 webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区" + zone))).click();
             }
-            Thread.sleep(60000);
+            Thread.sleep(80000);
             webDriver.navigate().refresh();
             String ip = null;
             try {
-                for (int i = 0; i < 4; i++) {
+//                for (int i = 0; i < 4; i++) {
                     ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面第一条IP地址"))).getText();
-                    if (ip != null)
-                        break;
-                    Thread.sleep(5000);
-                }
-                ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面IP地址"))).getText();
                 logger.info("The public ip is :" + ip);
-            } catch (Exception e) {
+
+//                    if (ip != null)
+//                        break;
+//                    Thread.sleep(5000);
+            }
+//                ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面IP地址"))).getText();
+            catch (Exception e) {
                 logger.info("failed to get DB public IP");
             }
-//        String ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
-//        if (ip == null) {
-//            logger.info("create db unfinished");
-//        } else {
-//        logger.info("The public ip is :" + ip);
-//        }
-            Thread.sleep(50000);
+//
+            Thread.sleep(60000);
             String RedisConnectionResult = RedisUtil.getRedisConnectionResult(ip, passwd);
             if (RedisConnectionResult != null) {
                 if (RedisConnectionResult.equals("PONG")) {
@@ -155,7 +135,7 @@ public class AutoCreateRedisAndTest {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
-            return JsonUtil.getJSONString(1, "Exception");
+            return JsonUtil.getJSONString(1, e.getMessage());
         } finally {
             webDriver.quit();
         }
