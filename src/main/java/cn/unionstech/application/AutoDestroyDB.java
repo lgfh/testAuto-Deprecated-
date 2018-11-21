@@ -6,29 +6,46 @@ import cn.unionstech.Utils.JsonUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.Properties;
 
 /**
  * @author WXY
  * @version 创建时间：2018/11/1
  */
+@Service
 public class AutoDestroyDB {
 
     private final static Logger logger = Logger.getLogger(AutoDestroyDB.class);
 
-    public static void main(String[] args) {
-        autoDestroyDB();
-    }
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
-    public static String autoDestroyDB() {
+    public String autoDestroyDB(String zone) {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
         try {
+            Properties properties = new Properties();
+            BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
+            properties.load(bufferedReader);
             //利用cookies跳过登陆，进入host的界面
             login.bypassLoginWithCookies(webDriver);
+            Actions action = new Actions(webDriver);
             webDriver.get(login.getCurrentURL() + "cloudDatabase");
+            if (!(login.getCurrentURL().contains("zschj"))) {
+                //区域选择
+                action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区")))).perform();
+                Thread.sleep(1000);
+                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区" + zone))).click();
+            }
             //数据库页面释放公网ip
             webDriver.navigate().refresh();
 //            if(!(webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span")).getText().contains("绑定公网IP"))) {
@@ -52,10 +69,10 @@ public class AutoDestroyDB {
 //            logger.info("DB has been destroyed");
             Thread.sleep(1000);
             logger.info("auto destroy DB success");
-            return JsonUtil.getJSONString(0, "删除数据库成功");
-        } catch (InterruptedException e) {
+            return JsonUtil.getJSONString(0, "删除数据库成功,zone是：" + zone);
+        } catch (Exception e) {
             logger.error(e.getMessage());
-            return JsonUtil.getJSONString(1, "删除数据库失败");
+            return JsonUtil.getJSONString(1, "删除数据库失败,zone是: " + zone);
         } finally {
             webDriver.quit();
         }

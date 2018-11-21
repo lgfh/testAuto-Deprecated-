@@ -2,34 +2,43 @@ package cn.unionstech.application;
 
 import cn.unionstech.Utils.BypassLoginWithCookies;
 import cn.unionstech.Utils.ChromeDriverUtil;
+import cn.unionstech.Utils.JsonUtil;
 import cn.unionstech.Utils.MongoUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 
 /**
  * @author WXY
  * @version 创建时间：2018/11/1
  */
+@Service
 public class AutoCreateMongoDbAndTest {
     private final static Logger logger = Logger.getLogger(AutoCreateMongoDbAndTest.class);
 
-    public static void main(String[] args) {
-        autoCreateMongoDbTest();
-    }
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
-    public static void autoCreateMongoDbTest() {
+
+    public String autoCreateMongoDbTest(String zone) {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = null;
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
         try {
+
+            webDriver = chromeDriverUtil.prepareChromeWebDriver();
             Properties properties = new Properties();
             BufferedReader bufferedReader = new BufferedReader(new FileReader("src/main/resources/xpath.properties"));
             properties.load(bufferedReader);
@@ -40,7 +49,7 @@ public class AutoCreateMongoDbAndTest {
 
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
-                webDriver.findElement(By.xpath(properties.getProperty("DB购买页面华东一区"))).click();
+                webDriver.findElement(By.xpath(properties.getProperty("DB购买页面" + zone))).click();
             }
 
             //实时计费
@@ -48,15 +57,30 @@ public class AutoCreateMongoDbAndTest {
 
             //选择mongodb镜像
             Actions action = new Actions(webDriver);
-            action.moveToElement(webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[1]/div"))).perform();
+            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB购买页面Mongo镜像")))).perform();
             Thread.sleep(1000);
-            webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[2]/ul/li")).click();
-            logger.info("using DB template：" + webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[2]/ul/li")).getText());
+            List<WebElement> MongoDBTemplateList = webDriver.findElements(By.xpath(properties.getProperty("DB购买页面Mongo镜像下拉列表")));
+            Random random = new Random();
+            int num = random.nextInt(MongoDBTemplateList.size());
+            MongoDBTemplateList.get(num).click();
+            logger.info("using DB template：" + MongoDBTemplateList.get(num).getText());
+//            webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[2]/ul/li")).click();
+//            logger.info("using DB template：" + webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[1]/div/div[2]/div/div[4]/div[2]/ul/li")).getText());
 
             //点 2核
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[2]/div/div[2]/div[2]")).click();
             //点 4G
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[1]/div[3]/div/div[2]/div[2]")).click();
+
+            //选择带new的新VPC来创建DB
+            webDriver.findElement(By.xpath(properties.getProperty("DB购买页面选择VPC"))).click();
+            Thread.sleep(500);
+            List<WebElement> VPCList = webDriver.findElements(By.xpath(properties.getProperty("DB购买页面选择VPC下拉列表")));
+            for (WebElement e : VPCList) {
+                if (e.getText().contains("new"))
+                    e.click();
+            }
+
             //默认勾选ip，去掉磁盘
             webDriver.findElement(By.xpath("//*[@id=\"Pdata\"]/div/div[3]/div[3]/div[1]/div[1]/div/img")).click();
 
@@ -82,31 +106,46 @@ public class AutoCreateMongoDbAndTest {
             Thread.sleep(1000);
 
 
+            //切换数据库页面
             webDriver.get(login.getCurrentURL() + "cloudDatabase");
             Thread.sleep(3000);
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
                 action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区")))).perform();
                 Thread.sleep(1000);
-                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区华东一区"))).click();
+                webDriver.findElement(By.xpath(properties.getProperty("DB页面下拉选区" + zone))).click();
             }
-            Thread.sleep(50000);
+            //等待创建和绑定IP完成
+            Thread.sleep(80000);
             webDriver.navigate().refresh();
-            String ip = webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[4]/div/div/div[2]/table/tbody/tr/td[5]/div/div/span[1]")).getText();
-            if (ip == null) {
-                logger.info("create db unfinished");
-            } else {
+            String ip = null;
+            try {
+//                for (int i = 0; i < 4; i++) {
+                ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面第一条IP地址"))).getText();
+//                    if (ip != null)
+//                        break;
+//                    Thread.sleep(4000);
+//                }
+//                ip = webDriver.findElement(By.xpath(properties.getProperty("DB页面IP地址"))).getText();
                 logger.info("The public ip is :" + ip);
+            } catch (Exception e) {
+                logger.info("failed to get DB public IP");
             }
-            Thread.sleep(40000);
+
+            Thread.sleep(60000);
             String MongoConnectionResult = MongoUtil.getMongoConnectionResult(ip);
-            if (MongoConnectionResult == null) {
+
+            if (MongoConnectionResult.equals(ip + ":27017")) {
+                logger.info("mongodb connect success");
+                return JsonUtil.getJSONString(0, "mongodb connect success");
+            } else {
                 logger.info("cant connect mongodb");
-            } else if (MongoConnectionResult.equals(ip + ":27017")) {
-                logger.info("connect mongodb success");
+                return JsonUtil.getJSONString(1, "cant connect mongodb");
             }
+
         } catch (Exception e) {
             logger.error(e.getMessage());
+            return JsonUtil.getJSONString(1, "Exception");
         } finally {
             webDriver.quit();
         }

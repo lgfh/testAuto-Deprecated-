@@ -12,18 +12,20 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class AutoDestroyVm {
     private final static Logger logger = Logger.getLogger(AutoDestroyVm.class);
 
-    public static void main(String[] args) {
-        autoDestroyVM();
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
-    }
 
-    public static String autoDestroyVM() {
+    public String autoDestroyVM() {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 

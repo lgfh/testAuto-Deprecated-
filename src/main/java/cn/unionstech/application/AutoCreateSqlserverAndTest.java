@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Connection;
 
@@ -17,9 +18,12 @@ import java.sql.Connection;
 public class AutoCreateSqlserverAndTest {
     private final static Logger logger = Logger.getLogger(AutoCreateSqlserverAndTest.class);
 
-    public static void main(String[] args) {
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
+
+    public void main(String[] args) {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
         Connection conn = null;

@@ -13,6 +13,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -21,17 +23,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+@Service
 public class AutoCreateVm {
     private final static Logger logger = Logger.getLogger(AutoCreateVm.class);
 
-    public static void main(String[] args) {
-        autoCreateVM();
-    }
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
-    public static String autoCreateVM() {
+
+    public String autoCreateVM(String zone) {
 
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
@@ -45,25 +48,34 @@ public class AutoCreateVm {
 
             webDriver.get(login.getCurrentURL() + "buy");
             //创建选择自定义配置
-            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[1]/div[2]")).click();
+            webDriver.findElement(By.xpath(properties.getProperty("VM购买页面-自定义配置"))).click();
             if (!(login.getCurrentURL().contains("zschj"))) {
                 //区域选择
-                webDriver.findElement(By.xpath(properties.getProperty("VM购买页面-北方一区"))).click();
+                webDriver.findElement(By.xpath(properties.getProperty("VM购买页面-" + zone))).click();
             }
             //实时计费
             webDriver.findElement(By.xpath(properties.getProperty("VM购买页面-实时计费"))).click();
 
             //选择镜像，此处为选择指定操作系统的某一个镜像
-            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("Linux镜像")))).perform();
+            action.moveToElement(webDriver.findElement(By.xpath(properties.getProperty("Centos镜像")))).perform();
             Thread.sleep(1000);
 
-            List<WebElement> VmTemplateList = webDriver.findElements(By.xpath(properties.getProperty("Linux镜像下拉列表")));
-            Random random = new Random();
-            int num = random.nextInt(VmTemplateList.size()) + 1;
-            logger.info("使用模板： " +
-                    webDriver.findElement(By.xpath(String.format
-                            (properties.getProperty("Linux镜像下拉列表") + "[%d]", num))).getText());
-            webDriver.findElement(By.xpath(String.format(properties.getProperty("Linux镜像下拉列表") + "[%d]", num))).click();
+            List<WebElement> VmTemplateList = webDriver.findElements(By.xpath(properties.getProperty("Centos镜像下拉列表")));
+            int num = 1;
+            if (VmTemplateList.size() == 1) {
+                webDriver.findElement(By.xpath(properties.getProperty("Centos镜像下拉列表"))).click();
+                logger.info("使用模板： " +
+                        webDriver.findElement(By.xpath(String.format
+                                (properties.getProperty("Centos镜像下拉列表")))).getText());
+            } else {
+                Random random = new Random();
+//                num = random.nextInt(VmTemplateList.size()) + 1;
+                num = 3;
+                logger.info("使用模板： " +
+                        webDriver.findElement(By.xpath(String.format
+                                (properties.getProperty("Centos镜像下拉列表") + "[%d]", num))).getText());
+                webDriver.findElement(By.xpath(String.format(properties.getProperty("Centos镜像下拉列表") + "[%d]", num))).click();
+            }
 
             //点 2核
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[4]/div[1]/div[4]/div/div[2]/div[2]")).click();
@@ -92,7 +104,7 @@ public class AutoCreateVm {
             webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[5]/div[2]/div[3]/div/div[2]/input")).sendKeys("Yrxt@123");
 
             //点 立即购买
-            webDriver.findElement(By.xpath("//*[@id=\"Pecs\"]/div[2]/div[6]/div/button[2]/span")).click();
+            webDriver.findElement(By.xpath(properties.getProperty("VM购买页面-立即购买"))).click();
             //点 支付
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div[2]/button/span")).click();
 

@@ -13,6 +13,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -21,17 +23,18 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
+@Service
 public class AutoCreateGPUVm {
 
     private final static Logger logger = Logger.getLogger(AutoCreateGPUVm.class);
 
-    public static void main(String[] args) {
-        autoCreateGpuVM();
-    }
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
 
-    public static String autoCreateGpuVM() {
+
+    public String autoCreateGpuVM() {
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
 
@@ -44,7 +47,9 @@ public class AutoCreateGPUVm {
 
             webDriver.get(login.getCurrentURL() + "GpuList");
             //创建
-            webDriver.findElement(By.xpath("//*[@id=\"content\"]/div[3]/button/span")).click();
+            webDriver.findElement(By.xpath(properties.getProperty("GPU页面创建按钮"))).click();
+            Thread.sleep(5000);
+            //*[@id="content"]/div[3]/button/span
 
             Actions action = new Actions(webDriver);
             if (!(login.getCurrentURL().contains("zschj"))) {
@@ -86,10 +91,14 @@ public class AutoCreateGPUVm {
             //点 确认支付
             webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div[2]/div[3]/button/span")).click();
             Thread.sleep(5000);
-            if (webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText() != null)
+            if (webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText() != null) {
+                if (webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText().equals("支付失败")) {
+                    return JsonUtil.getJSONString(1, "订单支付失败，创建GPU主机失败");
+                }
                 logger.info(webDriver.findElement(By.xpath("//*[@id=\"back\"]/div[5]/div/div/div/div/div/div/h1")).getText());
-            logger.info("创建GPU主机成功");
-            return JsonUtil.getJSONString(0, "创建GPU主机成功");
+                logger.info("创建GPU主机成功");
+                return JsonUtil.getJSONString(0, "创建GPU主机成功");
+            }
         } catch (FileNotFoundException e) {
             logger.error("xpath文件读取失败");
             return JsonUtil.getJSONString(1, "xpath文件读取失败，创建GPU主机失败");
@@ -99,5 +108,6 @@ public class AutoCreateGPUVm {
         } finally {
             webDriver.quit();
         }
+        return JsonUtil.getJSONString(1, "创建GPU主机失败");
     }
 }

@@ -9,6 +9,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -24,16 +25,16 @@ import java.util.Random;
 public class AutoCreatePostgresqlAndTest {
     private final static Logger logger = Logger.getLogger(AutoCreatePostgresqlAndTest.class);
 
+    @Autowired
+    ChromeDriverUtil chromeDriverUtil;
+
     static Connection conn = null;
 
-    public static void main(String[] args) {
-        autoCreatePostgresqlTest();
-    }
 
-    public static void autoCreatePostgresqlTest() {
+    public void autoCreatePostgresqlTest() {
 
         //准备chrome的驱动
-        WebDriver webDriver = ChromeDriverUtil.prepareChromeWebDriver();
+        WebDriver webDriver = chromeDriverUtil.prepareChromeWebDriver();
         //实例化工具类
         BypassLoginWithCookies login = new BypassLoginWithCookies();
         try {
