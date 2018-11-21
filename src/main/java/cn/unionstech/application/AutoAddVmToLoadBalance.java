@@ -75,7 +75,7 @@ public class AutoAddVmToLoadBalance {
             return JsonUtil.getJSONString(1, "xpath文件读取失败");
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
-            return JsonUtil.getJSONString(0, "向负载添加主机失败");
+            return JsonUtil.getJSONString(1, "向负载添加主机失败");
         } finally {
             webDriver.quit();
         }
