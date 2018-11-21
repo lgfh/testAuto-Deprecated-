@@ -1,12 +1,16 @@
 package cn.unionstech.controller;
 
+import cn.unionstech.application.AutoAddVmToLoadBalance;
 import cn.unionstech.application.AutoCreateGPUVm;
+import cn.unionstech.application.AutoCreateLoadBalance;
+import cn.unionstech.application.AutoCreateMongoDbAndTest;
 import cn.unionstech.application.AutoCreateMysqlAndTestConnection;
 import cn.unionstech.application.AutoCreateRedisAndTest;
 import cn.unionstech.application.AutoCreateVm;
 import cn.unionstech.application.AutoDestroyDB;
 import cn.unionstech.application.AutoDestroyVm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +40,15 @@ public class IndexController {
 
     @Autowired
     AutoCreateRedisAndTest autoCreateRedisAndTest;
+
+    @Autowired
+    AutoCreateMongoDbAndTest autoCreateMongoDbAndTest;
+
+    @Autowired
+    AutoCreateLoadBalance autoCreateLoadBalance;
+
+    @Autowired
+    AutoAddVmToLoadBalance autoAddVmToLoadBalance;
 
     @RequestMapping(path = "/CreateVm")
 //    @ResponseBody
@@ -80,4 +93,18 @@ public class IndexController {
     }
 
 
+    @GetMapping("/CreateMongoTest")
+    public String getMongoDbTestResult(@RequestParam(value = "zone", defaultValue = "华东一区") String zone) {
+        return autoCreateMongoDbAndTest.autoCreateMongoDbTest(zone);
+    }
+
+    @GetMapping("/CreateLB")
+    public String getLBResult(@RequestParam(value = "zone", defaultValue = "华东一区") String zone) {
+        return autoCreateLoadBalance.autoCreateLoadBalance(zone);
+    }
+
+    @GetMapping("/AddVmToLB")
+    public String getAddVmToLBResult(@RequestParam(value = "zone", defaultValue = "华东一区") String zone) {
+        return autoAddVmToLoadBalance.autoAddVmToLoadBalance(zone);
+    }
 }
